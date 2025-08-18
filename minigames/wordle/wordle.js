@@ -1,5 +1,5 @@
 const BANCODEPALAVRAS = require('./palavras');
-const palavra = palavraAleatoria(BANCODEPALAVRAS);
+var palavra = palavraAleatoria(BANCODEPALAVRAS);
 const MAX_TENTATIVAS = 5;
 const historico = {};
 
@@ -39,25 +39,19 @@ function formataMensagem(historicoDoUser) {
     }
     return mensagem.trim();
 }
-
-client.once('ready', () => {
-    console.log(`🤖 Bot logado como ${client.user.tag}`);
-});
-
-client.on('messageCreate', message => {
-    const userId = message.author.id;
-
-    if (message.content.toLowerCase() === '!reset') {
-        historico[userId] = [];
+module.exports = wordleLogic
+function wordleLogic( message, channelId){
+    if (message.content.toLowerCase() === '!wordle !reset') {
+        historico[channelId] = [];
         palavra = palavraAleatoria(BANCODEPALAVRAS);
         message.reply("♻️ Jogo reiniciado! Você tem 5 tentativas novamente.");
-        return
+        return;
     }
     if (message.author.bot) return;
 
-    if (message.content.toLowerCase().startsWith('!tentativa ')) {
+    if (message.content.toLowerCase().startsWith('!wordle !tentativa ')) {
     const args = message.content.split(' ');
-    const tentativa = args[1];
+    const tentativa = args[2];
 
     if (!tentativa || tentativa.length !== 5) {
       message.reply("⚠️ Digite uma palavra de 5 letras, ex: `!tentativa piada`");
@@ -65,19 +59,19 @@ client.on('messageCreate', message => {
     }
 
 
-    if (!historico[userId]) {
-      historico[userId] = [];
+    if (!historico[channelId]) {
+      historico[channelId] = [];
     }
 
-    if (historico[userId].length >= MAX_TENTATIVAS) {
+    if (historico[channelId].length >= MAX_TENTATIVAS) {
       message.reply("❌ Você já usou suas 5 tentativas! Reinicie o jogo digitando `!reset`.");
       return;
     }
 
     const resultado = checarPalavra(tentativa);
-    historico[userId].push(resultado);
+    historico[channelId].push(resultado);
 
-    message.reply(formataMensagem(historico[userId]));
-  }
-});
-client.login(TOKEN);
+    message.reply(formataMensagem(historico[channelId]));
+}
+
+};
