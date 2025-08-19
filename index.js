@@ -1,7 +1,7 @@
 const { Client, GatewayIntentBits } = require('discord.js');
 require('dotenv').config();
+const wordleLogic = require('./minigames/wordle/wordle.js')
 const TOKEN = process.env.DISCORD_TOKEN;
-
 
 const client = new Client({
   intents: [
@@ -10,17 +10,15 @@ const client = new Client({
     GatewayIntentBits.MessageContent
   ]
 });
-
-// Quando o bot ficar online
-client.once("ready", () => {
-  console.log(`✅ Bot logado como ${client.user.tag}`);
-});
-
-// Responder mensagens
-client.on("messageCreate", message => {
-  if (message.content === "!ping") {
-    message.reply("🏓 Pong!");
-  }
-});
-
 client.login(TOKEN);
+
+client.once('ready', () => {
+    console.log(`🤖 Bot logado como ${client.user.tag}`);
+});
+client.on('messageCreate', message => {
+  if (message.content.toLowerCase().startsWith('!w ')) {
+    const channelId = message.channelId;
+    wordleLogic(message,channelId);
+    return;
+  }
+})
