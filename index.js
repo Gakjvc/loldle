@@ -16,7 +16,7 @@ client.once('ready', () => {
     console.log(`🤖 Bot logado como ${client.user.tag}`);
 });
 client.on('messageCreate', message => {
-  if (message.content.toLowerCase().startsWith('!wordle ')) {
+  if (message.content.toLowerCase().startsWith('!w ')) {
     const channelId = message.channelId;
     wordleLogic(message,channelId);
     return;
