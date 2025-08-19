@@ -25,7 +25,11 @@ function checkWord(tentativa) {
 }
 
 function emptyLine() {
-  return "⬜⬜⬜⬜⬜";
+  let line = "";
+  for (let i = 0; i < word.length; i++) {
+    line += "⬜"; // quadrado branco
+  }
+  return line;
 }
 
 function formatMessage(channelHistory) {
@@ -48,8 +52,8 @@ function wordleLogic(message){
     const args = message.content.split(' ');
     const tentativa = args[1];
 
-    if (!tentativa || tentativa.length !== 5) {
-      message.reply("⚠️ Digite uma word de 5 letras, ex: `!w garen`");
+    if (!tentativa || tentativa.length !== word.length) {
+      message.reply(`⚠️ Digite uma palavra de **${word.length}** letras!`);
       return null;
     }
 
@@ -63,13 +67,13 @@ function wordleLogic(message){
     history[channelId].push(result);
     
     message.reply(formatMessage(history[channelId]));
-    if (result.includes ("🟩🟩🟩🟩🟩")) {
+    if (tentativa.toLowerCase() === word) {
       message.reply(`✅ Parabéns! Você acertou a word: **${word}**`);
       history[channelId] = [];
       resetWord(history[channelId], message);
       return true;
     }
-    if (history[channelId].length === 5) {
+    if (history[channelId].length === MAX_TRIES) {
       message.reply(`❌ Você perdeu! A word era: **${word}**.`);
       history[channelId] = [];
       resetWord(history[channelId], message);

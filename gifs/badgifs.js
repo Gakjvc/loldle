@@ -8,5 +8,6 @@ const badgifs = [
   "https://tenor.com/view/virtual-insanity-virtual-insanity-template-walking-dancing-rearranging-furnitures-gif-27710286",
   "https://tenor.com/view/stop-jk-simmons-fletcher-whiplash-cut-it-gif-18304600",
   "https://tenor.com/view/ltg-kys-ltg-kys-you-should-kys-now-meme-gif-25374805",
+  "https://tenor.com/view/no-jotaro-jojo-gif-23405322",
 ];
 module.exports = badgifs;

@@ -8,5 +8,7 @@ const goodgifs = [
   "https://tenor.com/view/club-penguin-penguin-dancing-cute-gif-17795117",
   "https://tenor.com/view/tropa-do-gordao-gif-26097982",
   "https://tenor.com/view/mob-psycho-season3-mob-psycho-reigen-arataka-reigen-thumbs-up-gif-26873417https://tenor.com/view/reigen-reigen-arataka-con-artist-filthy-monkey-that-cant-even-use-jujitsu-gif-17346470480681697752",
+  "https://tenor.com/view/joselito-brincar-hermes-e-renato-happy-thumbs-up-gif-14572405",
+  "https://tenor.com/view/yes-yes-yes-yeah-yep-yas-gif-15410358",
 ];
 module.exports = goodgifs;
