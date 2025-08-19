@@ -1,6 +1,7 @@
 const { Client, GatewayIntentBits } = require('discord.js');
 require('dotenv').config();
 const wordleLogic = require('./minigames/wordle/wordle.js')
+const guessLogic = require('./minigames/guess/guess.js');
 const TOKEN = process.env.DISCORD_TOKEN;
 
 const client = new Client({
