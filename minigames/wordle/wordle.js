@@ -1,92 +1,83 @@
-const BANCODEPALAVRAS = require('./palavras');
-var palavra = palavraAleatoria(BANCODEPALAVRAS);
-const MAX_TENTATIVAS = 5;
-const historico = {};
+const WORDBANK = require('./palavras');
+var word = randomWord(WORDBANK);
+const MAX_TRIES = 5;
+const history = {};
 
-function palavraAleatoria() {
-  const indice = Math.floor(Math.random() * BANCODEPALAVRAS.length);
-  return BANCODEPALAVRAS[indice];
+function randomWord() {
+  const index = Math.floor(Math.random() * WORDBANK.length);
+  return WORDBANK[index];
 }
-function checarPalavra(tentativa) {
+function checkWord(tentativa) {
   tentativa = tentativa.toLowerCase();
-  let resultado = "";
+  let result = "";
 
-  for (let i = 0; i < palavra.length; i++) {
-    if (tentativa[i] === palavra[i]) {
-      resultado += "🟩"; // letra correta e na posição certa
-    } else if (palavra.includes(tentativa[i])) {
-      resultado += "🟨"; // letra correta mas na posição errada
+  for (let i = 0; i < word.length; i++) {
+    if (tentativa[i] === word[i]) {
+      result += "🟩"; // letra correta e na posição certa
+    } else if (word.includes(tentativa[i])) {
+      result += "🟨"; // letra correta mas na posição errada
     } else {
-      resultado += "🟥"; // letra errada
+      result += "🟥"; // letra errada
     }
   }
 
-  return resultado;
+  return result;
 }
 
-function linhaVazia() {
-  return "⬜⬜⬜⬜⬜";
+function emptyLine() {
+  let line = "";
+  for (let i = 0; i < word.length; i++) {
+    line += "⬜"; // quadrado branco
+  }
+  return line;
 }
 
-function formataMensagem(historicoDoUser) {
+function formatMessage(channelHistory) {
    let mensagem = "";
-    for (let i = 0; i < MAX_TENTATIVAS; i++) {
-      if (i < historicoDoUser.length) {
-        mensagem += historicoDoUser[i] + "\n";
+    for (let i = 0; i < MAX_TRIES; i++) {
+      if (i < channelHistory.length) {
+        mensagem += channelHistory[i] + "\n";
       } else {
-        mensagem += linhaVazia() + "\n";
+        mensagem += emptyLine() + "\n";
       };
     }
     return mensagem.trim();
 }
-function resetPalavra() {
-  palavra = palavraAleatoria(BANCODEPALAVRAS);
+function resetWord() {
+  word = randomWord(WORDBANK);
 }
 module.exports = wordleLogic
-function wordleLogic(message, channelId){
-    if (message.content.toLowerCase() === '!w !r') {
-      historico[channelId] = [];
-      resetPalavra(message);
-      return;    
-    }
-    if (message.author.bot) return;
-
-    if (message.content.toLowerCase().startsWith('!w !t ')) {
+function wordleLogic(message){
+    const channelId = message.channelId;
     const args = message.content.split(' ');
-    const tentativa = args[2];
+    const tentativa = args[1];
 
-    if (!tentativa || tentativa.length !== 5) {
-      message.reply("⚠️ Digite uma palavra de 5 letras, ex: `!w !t piada`");
-      return;
+    if (!tentativa || tentativa.length !== word.length) {
+      message.reply(`⚠️ Digite uma palavra de **${word.length}** letras!`);
+      return null;
     }
 
 
-    if (!historico[channelId]) {
-      historico[channelId] = [];
+    if (!history[channelId]) {
+      history[channelId] = [];
     }
 
-    if (historico[channelId].length >= MAX_TENTATIVAS) {
-      message.reply("❌ Você já usou suas 5 tentativas! Reinicie o jogo digitando `!w !r`.");
-      return;
-    }
     
-    const resultado = checarPalavra(tentativa);
-    historico[channelId].push(resultado);
+    const result = checkWord(tentativa);
+    history[channelId].push(result);
     
-    message.reply(formataMensagem(historico[channelId]));
-    if (resultado === "🟩🟩🟩🟩🟩") {
-      message.reply(`✅ Parabéns! Você acertou a palavra: **${palavra}**`);
-      message.reply(`https://tenor.com/view/morel-hunter-x-hunter-morel-mackernasey-hxh-thumbs-up-gif-21440886`);
-      historico[channelId] = [];
-      resetPalavra(historico[channelId], message);
-      return;
+    message.reply(formatMessage(history[channelId]));
+    if (tentativa.toLowerCase() === word) {
+      message.reply(`✅ Parabéns! Você acertou a word: **${word}**`);
+      history[channelId] = [];
+      resetWord(history[channelId], message);
+      return true;
     }
-    if (historico[channelId].length === 5) {
-      message.reply(`❌ Você perdeu! A palavra era: **${palavra}**. Reinicie o jogo digitando \`!wordle !reset\`.`);
-      message.reply(`https://tenor.com/view/reigen-reigen-arataka-con-artist-filthy-monkey-that-cant-even-use-jujitsu-gif-17346470480681697752`);
-      historico[channelId] = [];
-      resetPalavra(historico[channelId], message);
-      return;
+    if (history[channelId].length === MAX_TRIES) {
+      message.reply(`❌ Você perdeu! A word era: **${word}**.`);
+      history[channelId] = [];
+      resetWord(history[channelId], message);
+      return false;
     }
-  }
+  
 };
