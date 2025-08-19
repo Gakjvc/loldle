@@ -1,7 +1,7 @@
 const RIOT_API_VERSION = '14.24.1';
 
 async function fetchChampions(language = 'pt_BR') {
-  try {
+
     const response = await fetch(
       `https://ddragon.leagueoflegends.com/cdn/${RIOT_API_VERSION}/data/${language}/champion.json`
     );
@@ -18,8 +18,4 @@ async function fetchChampions(language = 'pt_BR') {
       title: champion.title,
       blurb: champion.blurb
     }));
-  } catch (error) {
-    console.error('Error fetching champions:', error);
-    throw error;
-  }
 }

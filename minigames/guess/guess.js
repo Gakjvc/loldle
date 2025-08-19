@@ -1,160 +1,101 @@
 const RIOT_API_VERSION = '14.24.1';
 const { iniciarJogo, checarCampeao } = require('./guess.js');
-async function fetchChampions(language = 'pt_BR') {
-  try {
-    const response = await fetch(
+const historico = {};
+const CHAMPIONS = [];
+const TARGETCHAMPION = randomChampion();
+
+ function fetchChampions(language = 'pt_BR') {
+  
+    const response = fetch(
       `https://ddragon.leagueoflegends.com/cdn/${RIOT_API_VERSION}/data/${language}/champion.json`
     );
-    if (response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    const champions = Object.values(data.data);
-    const championsWithCategories = champions.map(champion => {
-      return {
-        ...champion,
-        genero: getGeneroAleatorio(),
-        posicoes: getPosicoesAleatorias(),
-        especie: getEspecieAleatoria(),
-        recurso: getRecursoAleatorio(),
-        alcance: getAlcanceAleatorio(),
-        regioes: getRegioesAleatorias(),
-        anoLancamento: getAnoLancamentoAleatorio(),
-      };
-  });
+    const data =  response.json();
+    CHAMPIONS = Object.values(data.data);
+    const championsWithCategories = champions.map(champion => {}    
+    );
 
   return championsWithCategories;
-}  catch (error) {
-  console.error('Error fetching champions:', error);
-  throw error;
+}
+
+  function randomChampion() {
+    const index = Math.floor(Math.random() * CHAMPIONS.length);
+    return CHAMPIONS[index];
   }
-}
-
-function getGeneroAleatorio() {
-const generos = ['Masculino', 'Feminino', 'Outro'];
-return generos[Math.floor(Math.random() * generos.length)];
-}
-
-function getPosicoesAleatorias() {
-  const posicoes = ['top', 'jungle', 'mid', 'adc', 'support'];
-  const count = Math.floor(Math.random() * 2) + 1;
-  return posicoes.sort(() => 0.5 - Math.random()).slice(0, count);
-}
-
-function getEspecieAleatoria(){
-  const especies = ['Humano', 'Yordle', 'Vastaya', 'Espírito', 'Morto-Vivo', 'Deus', 'Robô'];
-  return especies[Math.floor(Math.random() * especies.length)];
-}
-
-function getRecursoAleatorio() {
-  const recursos = ['Mana', 'Energia', 'Fúria', 'Ferocidade', 'Calor', 'Nenhum'];
-  return recursos[Math.floor(Math.random() * recursos.length)];
-}
-
-function getAlcanceAleatorio() {
-  const alcance = ['Corpo a corpo', 'Longo alcance'];
-  const count = Math.floor(Math.random() * 2) + 1;
-  return alcance.sort(() => 0.5 - Math.random()).slice(0, count);
-}
   
-  function getRegioesAleatorias() {
-  const regioes = ['Demacia', 'Noxus', 'Ionia', 'Freljord', 'Piltover', 'Zaun', 'Ilhas das Sombras', 'Bandópolis', 'Ixtal', 'Vazio', 'Shurima', 'Targon', 'Runeterra' ];
-  const count = Math.floor(Math.random() * 3) + 1;
-  return regioes.sort(() => 0.5 - Math.random()).slice(0, count);
-}
+  function checkGuess(tentativa, channelId) {
+  tentativa = tentativa.toLowerCase();
+  let resultado = "";
 
-function getAnoLancamentoAleatorio() {
-  return 2009 + Math.floor(Math.random() * 17);  
-}
+  // encontra o campeão que o jogador digitou
+  const championTentativa = CHAMPIONS.find(
+    champion => champion.name.toLowerCase() === tentativa
+  );
 
-let campeoes = [];
-let campeaoAleatorio = null;
-let historico = {};
-
-async function iniciarJogo(channelId) {
-  try {
-    campeoes = await fetchChampions();
-    campeaoAleatorio = sortearCampeao();
-    console.log('Jogo iniciado! Tente adivinhar o campeão.');
-    historico[channelId] = [];
-    return true;
-  } catch (error) {
-    console.error('Erro ao iniciar o jogo:', error);
-    return false;
-  }
-} 
-  function sortearCampeao() {
-    const indice = Math.floor(Math.random() * campeoes.length);
-    return campeoes[indice];
+  if (!championTentativa) {
+    return "❌ Campeão não encontrado!";
   }
 
-  function checarCampeao(tentativa, categoria) {
-    tentativa = tentativa.toLowerCase();
-    let resultado = "";
-    
-    switch (categoria){
-      case 'nome':
-      if (tentativa === campeaoAleatorio.name.toLowerCase()){
-        resultado = "🟩"; // Campeão correto
-      } else if (campeaoAleatorio.name.toLowerCase().includes(tentativa)) {
-        resultado = "🟨"; // Nome correto, mas incompleto
-      } else {
-        resultado = "🟥"; // Nome incorreto
-      } 
-      break;
-
-      case 'genero':
-        if (tentativa === campeaoAleatorio.genero.toLowerCase()) {
-          resultado = "🟩"; // Gênero correto
-        } else {
-          resultado = "🟥"; // Gênero incorreto
-        }
-        break;
-
-        case 'posicao':
-          const posicoes = campeaoAleatorio.posicoes.map(p => p.toLowerCase());
-          if (posicoes.includes(tentativa)) {
-            resultado = "🟩"; // Posição correta
-          } else {
-            resultado = "🟥"; // Posição incorreta
-          }
-          break;
-
-          case 'recurso':
-            if (tentativa === campeaoAleatorio.recurso.toLowerCase()) {
-              resultado = "🟩"; // Recurso correto
-            } else {
-              resultado = "🟥"; // Recurso incorreto
-            } 
-            break;
-
-          case'regiao':
-          const regioes = campeaoAleatorio.regioes.map(r => r.toLowerCase());
-          if (regioes.includes(tentativa)) {
-            resultado = "🟩"; // Região correta
-          } else {
-            resultado = "🟥"; // Região incorreta
-          } 
-          break;
-
-          default:
-            resultado = "⚠️ Categoria inválida. Tente novamente.";
-            break; 
-    }
-
-    if (historico[channelId]) {
-      historico[channelId].push({ tentativa, categoria, resultado });
-    }
+  // verifica se acertou o campeão diretamente
+  if (tentativa === TARGETCHAMPION.name.toLowerCase()) {
+    resultado = `🎉 Parabéns! Você acertou o campeão: ${TARGETCHAMPION.name}`;
     return resultado;
   }
 
-const guessLogic = {
-  iniciarJogo,
-  checarCampeao,
-  sortearCampeao,
-  fetchChampions
-};
+  // helper para formatar com quadrado
+  const formatar = (atributoTentado, atributoCorreto, isArray = false) => {
+    let correto;
+    if (isArray) {
+      correto = atributoTentado.some(a => atributoCorreto.includes(a));
+    } else {
+      correto = atributoTentado === atributoCorreto;
+    }
+    return `${correto ? "🟩" : "🟥"} ${atributoTentado}`;
+  };
 
-module.exports = guessLogic;
+  const comparacoes = [];
+
+  // nome
+  comparacoes.push(formatar(championTentativa.name, TARGETCHAMPION.name));
+
+  // gênero
+  comparacoes.push(formatar(championTentativa.genero, TARGETCHAMPION.genero));
+
+  // espécie
+  comparacoes.push(formatar(championTentativa.especie, TARGETCHAMPION.especie));
+
+  // posição
+  comparacoes.push(formatar(championTentativa.posicoes, TARGETCHAMPION.posicoes, true));
+
+  // recurso
+  comparacoes.push(formatar(championTentativa.recurso, TARGETCHAMPION.recurso));
+
+  // alcance
+  comparacoes.push(formatar(championTentativa.alcance, TARGETCHAMPION.alcance));
+
+  // região
+  comparacoes.push(formatar(championTentativa.regioes, TARGETCHAMPION.regioes, true));
+
+  // ano
+  comparacoes.push(formatar(championTentativa.anoLancamento, TARGETCHAMPION.anoLancamento));
+
+  // junta tudo numa linha só
+  resultado = comparacoes.join(" | ");
+
+  // salva no histórico por canal
+  if (!historico[channelId]) historico[channelId] = [];
+  historico[channelId].push({ tentativa, resultado });
+
+  return resultado;
+}
   
+  module.exports = guessLogic;
+  function guessLogic(message){
+    channelId = message.channelId;
+    historico[channelId] = [];
+    
+    const args = message.content.split(' ');
+    const tentativa = args[1];
+    checkGuess(tentativa, message.channelId);
+
+   
+  };

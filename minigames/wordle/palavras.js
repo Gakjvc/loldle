@@ -65,6 +65,7 @@ const palavras = [
 "ganks",
 "proxy",
 "brush",
+"preto",
 ];
 
 module.exports = palavras;
