@@ -43,41 +43,46 @@ function formatMessage(channelHistory) {
     }
     return mensagem.trim();
 }
-function resetWord() {
+function resetGame(channelId) {
+  history[channelId] = [];
   word = randomWord(WORDBANK);
 }
 module.exports = wordleLogic
 function wordleLogic(message){
-    const channelId = message.channelId;
-    const args = message.content.split(' ');
-    const tentativa = args[1];
+  const channelId = message.channelId;
+  const args = message.content.split(' ');
+  const tentativa = args[1];
+  console.log(message.content);
+	if(message.content == '!ws')  {
+    message.reply(`🤠 Bora de next... a palavra era **${word}**`);
+    resetGame(channelId);
+    return null;
+	}
 
-    if (!tentativa || tentativa.length !== word.length) {
-      message.reply(`⚠️ Digite uma palavra de **${word.length}** letras!`);
-      return null;
-    }
+  if (!tentativa || tentativa.length !== word.length) {
+    message.reply(`⚠️ Digite uma palavra de **${word.length}** letras!`);
+    return null;
+  }
 
 
-    if (!history[channelId]) {
-      history[channelId] = [];
-    }
+  if (!history[channelId]) {
+    history[channelId] = [];
+  }
 
     
-    const result = checkWord(tentativa);
-    history[channelId].push(result);
+  const result = checkWord(tentativa);  
+  history[channelId].push(result);
     
-    message.reply(formatMessage(history[channelId]));
-    if (tentativa.toLowerCase() === word) {
-      message.reply(`✅ Parabéns! Você acertou a word: **${word}**`);
-      history[channelId] = [];
-      resetWord(history[channelId], message);
-      return true;
-    }
-    if (history[channelId].length === MAX_TRIES) {
-      message.reply(`❌ Você perdeu! A word era: **${word}**.`);
-      history[channelId] = [];
-      resetWord(history[channelId], message);
-      return false;
-    }
+  message.reply(formatMessage(history[channelId]));
+  if (tentativa.toLowerCase() === word) {
+    message.reply(`✅ Parabéns! Você acertou a word: **${word}**`);
+    resetGame(channelId);
+    return true;
+  }
+  if (history[channelId].length === MAX_TRIES) {
+    message.reply(`❌ Você perdeu! A word era: **${word}**.`);
+    resetGame(channelId);
+    return false;
+  }
   
 };

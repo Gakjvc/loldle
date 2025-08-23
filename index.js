@@ -20,7 +20,7 @@ client.once('ready', () => {
 client.on('messageCreate', message => {
   let result = null;
   if (message.author.bot) return;
-  if (message.content.toLowerCase().startsWith('!w ')) {
+  if (message.content.toLowerCase().startsWith('!w')) {
     result = wordleLogic(message);
     winOrLose(result, message)
     return;
