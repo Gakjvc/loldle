@@ -35,7 +35,7 @@ function winOrLose(result, message) {
   if(result == null){
     return;
   }
-  if(result){
+  else if(result){
     message.reply(win());
   }
   else if(result === false){
