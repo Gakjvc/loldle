@@ -30,4 +30,3 @@ async function generateImageWithLetter(letter, color, outputPath) {
 }
 
 module.exports = generateImageWithLetter;
-

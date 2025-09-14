@@ -2,6 +2,7 @@ const WORDBANK = require('./palavras');
 const generateImageWithLetter = require('./generateImage');
 const fs = require('fs');
 const path = require('path');
+const palavras = require('./palavras');
 
 var word = randomWord(WORDBANK);
 const MAX_TRIES = 5;
@@ -144,57 +145,55 @@ function resetWord() {
   word = randomWord(WORDBANK);
 }
 
+// 0 = jogo continua, 1 = perdeu, 2 = ganhou
 async function wordleLogic(message) {
   const channelId = message.channelId;
   const args = message.content.split(' ');
-  const tentativa = args[1];
+  const tentativa = args[1];  
 
   if (!tentativa || tentativa.length !== word.length) {
     message.reply(`⚠️ Digite uma palavra de **${word.length}** letras!`);
-    return null;
+    return 0;
   }
 
   if (!history[channelId]) {
     history[channelId] = [];
   }
 
-  const result = checkWord(tentativa);
-  history[channelId].push(result);
+  const guessResult = checkWord(tentativa);
+  history[channelId].push(guessResult);
   
-  try {
-    const gameImage = await formatMessage(history[channelId], channelId);
+  const gameImage = await formatMessage(history[channelId], channelId);
     
-    if (typeof gameImage === 'string' && gameImage.endsWith('.png')) {
-      const { AttachmentBuilder } = require('discord.js');
-      const attachment = new AttachmentBuilder(gameImage);
-      await message.reply({ files: [attachment] });
-      
-      setTimeout(() => {
-        if (fs.existsSync(gameImage)) {
-          fs.unlinkSync(gameImage);
-        }
-      }, 5000);
-    } else {
-      message.reply(gameImage);
-    }
-  } catch (error) {
-    console.error('Erro ao enviar imagem:', error);
-    message.reply('Erro ao processar a tentativa. Tente novamente.');
+  if (typeof gameImage === 'string' && gameImage.endsWith('.png')) {
+    const { AttachmentBuilder } = require('discord.js');
+    const attachment = new AttachmentBuilder(gameImage);
+    await message.reply({ files: [attachment] });
+    
+    setTimeout(() => {
+      if (fs.existsSync(gameImage)) {
+        fs.unlinkSync(gameImage);
+      }
+    }, 5000);
+  } else {
+    message.reply("gameImage");
   }
   
   if (tentativa.toLowerCase() === word) {
     message.reply(`✅ Parabéns! Você acertou a palavra: **${word}**`);
     history[channelId] = [];
     resetWord();
-    return true;
+    return 2;
   }
   
   if (history[channelId].length === MAX_TRIES) {
     message.reply(`❌ Você perdeu! A palavra era: **${word}**.`);
     history[channelId] = [];
     resetWord();
-    return false;
+    return 1;
   }
+
+  return 0;
 }
 
 module.exports = wordleLogic;
