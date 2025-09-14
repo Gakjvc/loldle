@@ -141,9 +141,32 @@ async function formatMessage(channelHistory, channelId) {
   }
 }
 
+
 function resetWord() {
   word = randomWord(WORDBANK);
 }
+
+function resetGame(channelId) {
+  history[channelId] = [];
+  word = randomWord(WORDBANK);
+}
+module.exports = wordleLogic
+function wordleLogic(message){
+  const channelId = message.channelId;
+  const args = message.content.split(' ');
+  const tentativa = args[1];
+  console.log(message.content);
+	if(message.content == '!ws')  {
+    message.reply(`🤠 Bora de next... a palavra era **${word}**`);
+    resetGame(channelId);
+    return null;
+	}
+
+  if (!tentativa || tentativa.length !== word.length) {
+    message.reply(`⚠️ Digite uma palavra de **${word.length}** letras!`);
+    return null;
+  }
+
 
 // 0 = jogo continua, 1 = perdeu, 2 = ganhou
 async function wordleLogic(message) {
@@ -151,10 +174,11 @@ async function wordleLogic(message) {
   const args = message.content.split(' ');
   const tentativa = args[1];  
 
+
   if (!tentativa || tentativa.length !== word.length) {
     message.reply(`⚠️ Digite uma palavra de **${word.length}** letras!`);
     return 0;
-  }
+
 
   if (!history[channelId]) {
     history[channelId] = [];
@@ -165,6 +189,7 @@ async function wordleLogic(message) {
   
   const gameImage = await formatMessage(history[channelId], channelId);
     
+
   if (typeof gameImage === 'string' && gameImage.endsWith('.png')) {
     const { AttachmentBuilder } = require('discord.js');
     const attachment = new AttachmentBuilder(gameImage);
@@ -197,3 +222,4 @@ async function wordleLogic(message) {
 }
 
 module.exports = wordleLogic;
+

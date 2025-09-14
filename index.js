@@ -22,6 +22,7 @@ client.on('messageCreate', async message => {
 
   if (message.author.bot) return;
 
+
   if (message.content.toLowerCase().startsWith('!w ')) {
      result = await wordleLogic(message);
     if(result == 0){
@@ -29,7 +30,7 @@ client.on('messageCreate', async message => {
     }else{
       winOrLose(result, message)
     }
-  }
+
 
   if(message.content.toLowerCase().startsWith('!g')){
     result = guessLogic(message);
