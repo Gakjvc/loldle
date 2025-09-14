@@ -141,39 +141,24 @@ async function formatMessage(channelHistory, channelId) {
   }
 }
 
-
-function resetWord() {
-  word = randomWord(WORDBANK);
-}
-
 function resetGame(channelId) {
   history[channelId] = [];
   word = randomWord(WORDBANK);
 }
-module.exports = wordleLogic
-function wordleLogic(message){
-  const channelId = message.channelId;
-  const args = message.content.split(' ');
-  const tentativa = args[1];
-  console.log(message.content);
+
+
+// 0 = jogo continua, 1 = perdeu, 2 = ganhou
+async function wordleLogic(message) {
+    const channelId = message.channelId;
+
 	if(message.content == '!ws')  {
     message.reply(`🤠 Bora de next... a palavra era **${word}**`);
     resetGame(channelId);
-    return null;
+    return 0;
 	}
 
-  if (!tentativa || tentativa.length !== word.length) {
-    message.reply(`⚠️ Digite uma palavra de **${word.length}** letras!`);
-    return null;
-  }
-
-}
-// 0 = jogo continua, 1 = perdeu, 2 = ganhou
-async function wordleLogic(message) {
-  const channelId = message.channelId;
   const args = message.content.split(' ');
-  const tentativa = args[1];  
-
+  const tentativa = args[1];
 
   if (!tentativa || tentativa.length !== word.length) {
     message.reply(`⚠️ Digite uma palavra de **${word.length}** letras!`);
@@ -206,15 +191,13 @@ async function wordleLogic(message) {
   
   if (tentativa.toLowerCase() === word) {
     message.reply(`✅ Parabéns! Você acertou a palavra: **${word}**`);
-    history[channelId] = [];
-    resetWord();
+    resetGame(channelId);
     return 2;
   }
   
   if (history[channelId].length === MAX_TRIES) {
     message.reply(`❌ Você perdeu! A palavra era: **${word}**.`);
-    history[channelId] = [];
-    resetWord();
+    resetGame(channelId);
     return 1;
   }
 
