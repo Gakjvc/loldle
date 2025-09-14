@@ -167,7 +167,7 @@ function wordleLogic(message){
     return null;
   }
 
-
+}
 // 0 = jogo continua, 1 = perdeu, 2 = ganhou
 async function wordleLogic(message) {
   const channelId = message.channelId;
@@ -178,7 +178,7 @@ async function wordleLogic(message) {
   if (!tentativa || tentativa.length !== word.length) {
     message.reply(`⚠️ Digite uma palavra de **${word.length}** letras!`);
     return 0;
-
+  }
 
   if (!history[channelId]) {
     history[channelId] = [];
@@ -220,6 +220,4 @@ async function wordleLogic(message) {
 
   return 0;
 }
-
 module.exports = wordleLogic;
-
