@@ -164,6 +164,11 @@ async function wordleLogic(message) {
     return gameState.Continue;
   }
 
+  if(!WORDBANK.includes(tentativa)){
+    message.reply(`⚠️ Não é um personagem paizão`);
+    return gameState.Continue;
+  }
+
   if (!history[channelId]) {
     history[channelId] = [];
   }

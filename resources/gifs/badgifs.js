@@ -9,5 +9,9 @@ const badgifs = [
   "https://tenor.com/view/stop-jk-simmons-fletcher-whiplash-cut-it-gif-18304600",
   "https://tenor.com/view/ltg-kys-ltg-kys-you-should-kys-now-meme-gif-25374805",
   "https://tenor.com/view/no-jotaro-jojo-gif-23405322",
+  "https://tenor.com/view/gypsycrusader-gif-16426264912235144703",
+  "https://tenor.com/view/my-honest-reaction-walk-stand-gif-25967478",
+  "https://tenor.com/view/jonah-hill-wtf-i-guess-bro-man-i-guess-smh-gif-4106492938199795190",
+  "https://tenor.com/view/piggy-pig-eats-pig-hal-pig-eating-pigwaith-gif-27009053",
 ];
 module.exports = badgifs;
