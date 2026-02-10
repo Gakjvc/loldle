@@ -178,7 +178,6 @@ async function wordleLogic(message) {
   
   const gameImage = await formatMessage(history[channelId], channelId);
     
-
   if (typeof gameImage === 'string' && gameImage.endsWith('.png')) {
     const { AttachmentBuilder } = require('discord.js');
     const attachment = new AttachmentBuilder(gameImage);
