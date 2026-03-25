@@ -1,21 +1,28 @@
-const RIOT_API_VERSION = '14.24.1';
+const fetch = require("node-fetch");
 
-async function fetchChampions(language = 'pt_BR') {
-
-    const response = await fetch(
-      `https://ddragon.leagueoflegends.com/cdn/${RIOT_API_VERSION}/data/${language}/champion.json`
-    );
+async function getChampions() {
+    const url = "https://ddragon.leagueoflegends.com/cdn/14.4.1/data/en_US/champion.json";
     
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+    const response = await fetch(url);
+    const json = await response.json();
+
+    const championsData = json.data;
+    const championsMap = new Map();
+
+    for (const champId in championsData) {
+        const champ = championsData[champId];
+
+        championsMap.set(champId.toLowerCase(), {
+            id: champ.id,
+            name: champ.name,
+            title: champ.title,
+            blurb: champ.blurb,
+            tags: champ.tags,
+            stats: champ.stats
+        });
     }
-    
-    const data = await response.json();
-    
-    return Object.values(data.data).map(champion => ({
-      id: champion.id,
-      name: champion.name,
-      title: champion.title,
-      blurb: champion.blurb
-    }));
+
+    return championsMap;
 }
+
+module.exports = getChampions;

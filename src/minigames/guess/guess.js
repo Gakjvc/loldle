@@ -1,8 +1,9 @@
 const RIOT_API_VERSION = '14.24.1';
-const { iniciarJogo, checarCampeao } = require('./guess.js');
+const getChampions = require('./guess.js');
+const gameState = require('../../enums/gameState');
 const historico = {};
 const CHAMPIONS = [];
-const TARGETCHAMPION = randomChampion();
+var TARGETCHAMPION;
 
  function fetchChampions(language = 'pt_BR') {
   
@@ -88,14 +89,17 @@ const TARGETCHAMPION = randomChampion();
   return resultado;
 }
   
+const champions = await getChampions();
   module.exports = guessLogic;
   function guessLogic(message){
     channelId = message.channelId;
-    historico[channelId] = [];
-    
+    historico[channelId] = []
     const args = message.content.split(' ');
     const tentativa = args[1];
-    checkGuess(tentativa, message.channelId);
-
+    const char = champions.get(tentativa);
+    message.reply(char.stats.hp)
+    
+    return gameState.Continue;
+    
    
   };

@@ -157,7 +157,7 @@ async function wordleLogic(message) {
 	}
 
   const args = message.content.split(' ');
-  const tentativa = args[1];
+  const tentativa = args[1].toLowerCase();
 
   if (!tentativa || tentativa.length !== word.length) {
     message.reply(`⚠️ Digite uma palavra de **${word.length}** letras!`);
@@ -192,7 +192,7 @@ async function wordleLogic(message) {
     message.reply("gameImage");
   }
   
-  if (tentativa.toLowerCase() === word) {
+  if (tentativa === word) {
     message.reply(`✅ Parabéns! Você acertou a palavra: **${word}**`);
     resetGame(channelId);
     return gameState.Won;
